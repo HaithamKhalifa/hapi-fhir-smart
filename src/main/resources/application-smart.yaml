@@ -1,0 +1,35 @@
+spring:
+  security:
+      oauth2:
+        resourceserver:
+          jwt:
+            jwk-set-uri: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart/protocol/openid-connect/certs
+            issuer-uri: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart
+hapi:
+  fhir:
+    fhir_version: R4
+    custom-bean-packages : ca.uhn.fhir.jpa.starter.smart
+    custom-interceptor-classes : ca.uhn.fhir.jpa.starter.smart.security.interceptor.SmartScopeAuthorizationInterceptor,ca.uhn.fhir.jpa.starter.smart.security.interceptor.SmartSearchNarrowingInterceptor,ca.uhn.fhir.jpa.starter.smart.SmartCapabilityStatementInterceptorR4
+    smart_enabled: true
+    smart_admin_group_enabled: true
+    smart_admin_group_claim: fhirAdmin
+    
+
+#see https://hl7.org/fhir/smart-app-launch/conformance.html#response
+smart: 
+  allowed_readonly_resources: Practitioner, PractitionerRole, Organization, OrganizationAffiliation, MedicationKnowledge, List, Location, HealthcareService
+  wellknown: 
+    issuer: https://keycloak-keycloak.apps.dev.ehocp.local
+    jwks_uri: https://keycloak-keycloak.apps.dev.ehocp.local/protocol/openid-connect/certs
+    authorization_endpoint: https://keycloak-keycloak.apps.dev.ehocp.local/protocol/openid-connect/auth
+    grant_types_supported: authorization_code, client_credentials
+    token_endpoint: https://keycloak-keycloak.apps.dev.ehocp.local/protocol/openid-connect/auth/token
+    token_endpoint_auth_methods_supported: client_secret_post, client_secret_basic, private_key_jwt
+    registration_endpoint: 
+    scopes_supported: launch/patient, patient/*.rs, online_access
+    response_types_supported: 
+    management_endpoint: 
+    introspection_endpoint : 
+    revocation_endpoint : 
+    capabilities: launch-standalone, client-public, client-confidential-symmetric, context-standalone-patient, permission-patient
+    code_challenge_methods_supported: S256

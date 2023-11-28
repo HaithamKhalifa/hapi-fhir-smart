@@ -1,0 +1,91 @@
+---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart/protocol/openid-connect/certs
+          issuer-uri: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart
+  main:
+    allow-circular-references: true
+  flyway:
+    enabled: false
+    check-location: false
+    baselineOnMigrate: true
+  datasource:
+    url: jdbc:postgresql://172.30.93.54:5432/fhir
+    username: admin
+    password: P@ssw0rd
+    driverClassName: org.postgresql.Driver
+    max-active: 15
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    properties:
+      hibernate.format_sql: false
+      hibernate.show_sql: false
+      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
+      hibernate.search.enabled: false
+hapi:
+  fhir:
+    openapi_enabled: true
+    fhir_version: R4
+    cr_enabled: "${CR_ENABLED: false}"
+    server_address: https://hapi-fhir-jpaserver-starter-hapi.apps.dev.ehocp.local/fhir
+    allow_cascading_deletes: true
+    allow_contains_searches: true
+    allow_multiple_delete: true
+    advanced_lucene_indexing: false
+    bulk_export_enabled: true
+    bulk_import_enabled: true
+    narrative_enabled: false
+    mdm_enabled: false
+    cors:
+      allow_Credentials: true
+      allowed_origin:
+        - "*"
+    search-coord-core-pool-size: 20
+    search-coord-max-pool-size: 100
+    search-coord-queue-capacity: 200
+    custom-bean-packages: ca.uhn.fhir.jpa.starter.smart
+    custom-interceptor-classes: ca.uhn.fhir.jpa.starter.smart.security.interceptor.SmartScopeAuthorizationInterceptor,ca.uhn.fhir.jpa.starter.smart.security.interceptor.SmartSearchNarrowingInterceptor,ca.uhn.fhir.jpa.starter.smart.SmartCapabilityStatementInterceptorR4
+    smart_enabled: true
+    smart_admin_group_enabled: true
+    smart_admin_group_claim: fhiradmin
+    tester:
+      home:
+        name: Local Tester
+        server_address: https://hapi-fhir-jpaserver-starter-hapi.apps.dev.ehocp.local/fhir
+        refuse_to_fetch_third_party_urls: false
+        fhir_version: R4
+      global:
+        name: Global Tester
+        server_address: http://hapi.fhir.org/baseR4
+        refuse_to_fetch_third_party_urls: false
+        fhir_version: R4
+    inline_resource_storage_below_size: 4000
+smart:
+  allowed_readonly_resources: Practitioner, PractitionerRole, Organization,
+    OrganizationAffiliation, MedicationKnowledge, List, Location,
+    HealthcareService
+  wellknown:
+    issuer: https://keycloak-keycloak.apps.dev.ehocp.local
+    jwks_uri: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart/protocol/openid-connect/certs
+    authorization_endpoint: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart/protocol/openid-connect/auth
+    grant_types_supported: authorization_code, client_credentials
+    token_endpoint: https://keycloak-keycloak.apps.dev.ehocp.local/auth/realms/smart/protocol/openid-connect/token
+    token_endpoint_auth_methods_supported: client_secret_post, client_secret_basic, private_key_jwt
+    registration_endpoint: null
+    scopes_supported: launch/patient, patient/*.*, online_access, offline_access, launch, launch/*.*
+    response_types_supported: null
+    management_endpoint: null
+    introspection_endpoint: null
+    revocation_endpoint: null
+    capabilities: launch-standalone, client-public, client-confidential-symmetric,
+      context-standalone-patient, permission-patient
+    code_challenge_methods_supported: S256
